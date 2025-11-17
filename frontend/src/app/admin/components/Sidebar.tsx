@@ -1,9 +1,14 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Package, ShoppingCart, Settings, LogOut, Users, Mail } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Settings, LogOut, Users, Mail, X } from 'lucide-react';
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,7 +29,12 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="w-64 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col fixed left-0 top-0 transition-colors">
+    <>
+      {isOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={onClose} />}
+      <div className={`w-64 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col fixed left-0 top-0 transition-all z-50 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <button onClick={onClose} className="absolute top-4 right-4 lg:hidden text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+          <X className="w-6 h-6" />
+        </button>
       <div className="p-6 border-b border-slate-200 dark:border-slate-800">
         <h1 className="text-2xl font-orbitron font-bold text-emerald-600 dark:text-emerald-400 mb-1">HackiBits</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">Admin Panel</p>
@@ -37,7 +47,10 @@ export default function Sidebar() {
           return (
             <button
               key={item.path}
-              onClick={() => router.push(item.path)}
+              onClick={() => {
+                router.push(item.path);
+                onClose();
+              }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                 isActive
                   ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg'
@@ -60,6 +73,7 @@ export default function Sidebar() {
           <span>Logout</span>
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
