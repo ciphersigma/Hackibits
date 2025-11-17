@@ -48,6 +48,7 @@ export default function Footer() {
               <li><Link href="/games" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Games</Link></li>
               <li><Link href="/community" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Community</Link></li>
               <li><Link href="/about" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">About</Link></li>
+              <li><Link href="/contact" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Contact</Link></li>
             </ul>
           </div>
           

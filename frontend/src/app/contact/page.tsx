@@ -101,7 +101,7 @@ export default function Contact() {
                   <MapPin className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mt-1" />
                   <div>
                     <p className="font-semibold text-slate-900 dark:text-white">Address</p>
-                    <p className="text-slate-600 dark:text-slate-400">Mumbai, Maharashtra, India</p>
+                    <p className="text-slate-600 dark:text-slate-400">Ahmedabad, Gujarat, India</p>
                   </div>
                 </div>
               </div>
