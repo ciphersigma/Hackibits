@@ -34,3 +34,17 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Keep-alive ping to prevent server from sleeping (for free hosting)
+if (process.env.NODE_ENV === 'production') {
+  const https = require('https');
+  const RENDER_URL = process.env.RENDER_URL || 'https://hackibits-backend.onrender.com';
+  
+  setInterval(() => {
+    https.get(`${RENDER_URL}/api/health`, (res) => {
+      console.log(`Keep-alive ping: ${res.statusCode}`);
+    }).on('error', (err) => {
+      console.error('Keep-alive error:', err.message);
+    });
+  }, 5 * 60 * 1000); // Ping every 5 minutes
+}
