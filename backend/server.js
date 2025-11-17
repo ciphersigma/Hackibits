@@ -38,10 +38,9 @@ app.listen(PORT, () => {
 // Keep-alive ping to prevent server from sleeping (for free hosting)
 if (process.env.NODE_ENV === 'production') {
   const https = require('https');
-  const RENDER_URL = process.env.RENDER_URL || 'https://hackibits-backend.onrender.com';
   
   setInterval(() => {
-    https.get(`${RENDER_URL}/api/health`, (res) => {
+    https.get('https://hackibits.onrender.com/api/health', (res) => {
       console.log(`Keep-alive ping: ${res.statusCode}`);
     }).on('error', (err) => {
       console.error('Keep-alive error:', err.message);
