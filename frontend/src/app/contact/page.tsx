@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, MapPin, Send } from 'lucide-react';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -9,9 +9,20 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setFormData({ name: '', email: '', message: '' });
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 3000);
+        setFormData({ name: '', email: '', message: '' });
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   return (
@@ -85,15 +96,7 @@ export default function Contact() {
                   <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mt-1" />
                   <div>
                     <p className="font-semibold text-slate-900 dark:text-white">Email</p>
-                    <a href="mailto:support@hackibits.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">support@hackibits.com</a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <Phone className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mt-1" />
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-white">Phone</p>
-                    <a href="tel:+919876543210" className="text-emerald-600 dark:text-emerald-400 hover:underline">+91 98765 43210</a>
+                    <a href="mailto:hackibits@gmail.com" className="text-emerald-600 dark:text-emerald-400 hover:underline">hackibits@gmail.com</a>
                   </div>
                 </div>
 
