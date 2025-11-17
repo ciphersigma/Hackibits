@@ -1,43 +1,27 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000
-});
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 exports.sendBulkEmail = async (recipients, subject, htmlContent) => {
   try {
-    // For Render deployment, return mock success since SMTP is blocked
-    if (process.env.NODE_ENV === 'production') {
-      console.log('Email would be sent to:', recipients.length, 'recipients');
-      console.log('Subject:', subject);
-      return { success: true, messageId: 'mock-' + Date.now(), note: 'SMTP blocked on Render - use SendGrid/Resend API' };
+    if (!process.env.SENDGRID_API_KEY) {
+      console.log('SendGrid not configured. Email would be sent to:', recipients.length, 'recipients');
+      return { success: true, messageId: 'no-api-key' };
     }
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      bcc: recipients,
+    const msg = {
+      to: recipients,
+      from: process.env.EMAIL_USER || 'hackibits@gmail.com',
       subject: subject,
       html: htmlContent
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    return { success: true, messageId: info.messageId };
+    await sgMail.sendMultiple(msg);
+    return { success: true, messageId: 'sg-' + Date.now() };
   } catch (error) {
-    console.error('Email sending error:', error);
-    if (process.env.NODE_ENV === 'production') {
-      return { success: true, messageId: 'fallback-' + Date.now(), note: 'SMTP unavailable - emails logged' };
-    }
+    console.error('SendGrid error:', error.response?.body || error);
     throw error;
   }
 };
@@ -60,15 +44,17 @@ exports.sendWelcomeEmail = async (email, name) => {
     </div>
   `;
 
-  if (process.env.NODE_ENV === 'production') {
+  if (!process.env.SENDGRID_API_KEY) {
     console.log('Welcome email would be sent to:', email);
-    return { accepted: [email], messageId: 'mock-welcome-' + Date.now() };
+    return { accepted: [email] };
   }
 
-  return await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+  const msg = {
     to: email,
+    from: process.env.EMAIL_USER || 'hackibits@gmail.com',
     subject: 'Welcome to HackiBits Beta Program!',
     html: htmlContent
-  });
+  };
+
+  return await sgMail.send(msg);
 };
