@@ -25,6 +25,7 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/visitors', require('./routes/visitors'));
 app.use('/api/wifi', require('./routes/wifi'));
 app.use('/api/beta', require('./routes/beta'));
+app.use('/api/payment', require('./routes/payment'));
 
 // Health check
 app.get('/api/health', (req, res) => {

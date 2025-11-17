@@ -16,14 +16,14 @@ export default function Cart() {
   }, []);
 
   const fetchCart = async () => {
-    const res = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/${sessionId}`);
     const data = await res.json();
     if (data.success) setCart(data.data);
   };
 
   const updateQuantity = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
-    const res = await fetch('http://localhost:5000/api/cart/update', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/update`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, productId, quantity })
@@ -33,7 +33,7 @@ export default function Cart() {
   };
 
   const removeItem = async (productId: string) => {
-    const res = await fetch('http://localhost:5000/api/cart/remove', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/remove`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, productId })

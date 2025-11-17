@@ -3,6 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 export default function Checkout() {
   const router = useRouter();
   const [cart, setCart] = useState<any>({ items: [] });
@@ -16,21 +22,87 @@ export default function Checkout() {
   }, []);
 
   const fetchCart = async () => {
-    const res = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/${sessionId}`);
     const data = await res.json();
     if (data.success) setCart(data.data);
   };
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:5000/api/orders/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId, customer })
-    });
-    const data = await res.json();
-    if (data.success) {
-      router.push(`/order/${data.data.orderId}`);
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, customer })
+      });
+      const data = await res.json();
+      
+      if (!data.success) {
+        alert(data.message || 'Failed to create order');
+        return;
+      }
+      
+      if (!window.Razorpay) {
+        alert('Razorpay SDK not loaded');
+        return;
+      }
+      
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'HackiBits',
+        description: 'Cybersecurity Hardware',
+        order_id: data.orderId,
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment/verify`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                sessionId
+              })
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.success) {
+              router.push(`/order/${verifyData.order.orderId}`);
+            } else {
+              alert('Payment verification failed');
+            }
+          } catch (err) {
+            console.error('Verification error:', err);
+            alert('Payment verification failed');
+          }
+        },
+        prefill: {
+          name: customer.name,
+          email: customer.email,
+          contact: customer.phone
+        },
+        theme: { color: '#059669' },
+        modal: {
+          ondismiss: function() {
+            console.log('Payment cancelled');
+          }
+        }
+      };
+      
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error('Order creation error:', err);
+      alert('Failed to create order. Please try again.');
     }
   };
 

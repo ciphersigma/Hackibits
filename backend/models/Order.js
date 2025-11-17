@@ -15,7 +15,9 @@ const orderSchema = new mongoose.Schema({
   },
   total: { type: Number, required: true },
   status: { type: String, default: 'pending' },
-  paymentStatus: { type: String, default: 'pending' }
+  paymentStatus: { type: String, default: 'pending' },
+  razorpayOrderId: String,
+  razorpayPaymentId: String
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

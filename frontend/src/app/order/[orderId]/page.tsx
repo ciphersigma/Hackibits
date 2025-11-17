@@ -15,7 +15,7 @@ export default function OrderConfirmation() {
   }, []);
 
   const fetchOrder = async () => {
-    const res = await fetch(`http://localhost:5000/api/orders/${params.orderId}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/${params.orderId}`);
     const data = await res.json();
     if (data.success) setOrder(data.data);
   };

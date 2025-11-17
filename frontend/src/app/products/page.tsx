@@ -20,19 +20,19 @@ export default function Products() {
   }, [sessionId]);
 
   const fetchProducts = async () => {
-    const res = await fetch('http://localhost:5000/api/products');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
     const data = await res.json();
     if (data.success) setProducts(data.data);
   };
 
   const fetchCart = async () => {
-    const res = await fetch(`http://localhost:5000/api/cart/${sessionId}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/${sessionId}`);
     const data = await res.json();
     if (data.success) setCart(data.data);
   };
 
   const addToCart = async (productId: string) => {
-    const res = await fetch('http://localhost:5000/api/cart/add', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cart/add`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId, productId, quantity: 1 })
