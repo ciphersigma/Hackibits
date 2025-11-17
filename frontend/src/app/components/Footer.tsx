@@ -54,10 +54,10 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="#" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Privacy Policy</Link></li>
-              <li><Link href="#" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Terms of Service</Link></li>
-              <li><Link href="#" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Shipping Policy</Link></li>
-              <li><Link href="#" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Refund Policy</Link></li>
+              <li><Link href="/privacy" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Privacy Policy</Link></li>
+              <li><Link href="/terms" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Terms of Service</Link></li>
+              <li><Link href="/shipping" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Shipping Policy</Link></li>
+              <li><Link href="/refund-policy" className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400">Refund Policy</Link></li>
             </ul>
           </div>
           
