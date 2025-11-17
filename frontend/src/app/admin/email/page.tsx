@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Send } from 'lucide-react';
+import { API_URL } from '@/lib/config';
 
 export default function EmailPage() {
   const [subject, setSubject] = useState('');
@@ -15,7 +16,7 @@ export default function EmailPage() {
     setResult(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/beta/send-email', {
+      const response = await fetch(`${API_URL}/beta/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subject, message })

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Users, Mail, Phone, Calendar } from 'lucide-react';
+import { API_URL } from '@/lib/config';
 
 type BetaUser = {
   _id: string;
@@ -21,7 +22,7 @@ export default function BetaUsersPage() {
 
   const fetchBetaUsers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/beta/users');
+      const response = await fetch(`${API_URL}/beta/users`);
       const data = await response.json();
       setUsers(data.users);
     } catch (error) {

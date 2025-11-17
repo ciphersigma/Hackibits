@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Mail, User, Phone, Sparkles, CheckCircle } from 'lucide-react';
+import { API_URL } from '@/lib/config';
 
 export default function JoinBeta() {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
@@ -15,7 +16,7 @@ export default function JoinBeta() {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/beta/join', {
+      const response = await fetch(`${API_URL}/beta/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
