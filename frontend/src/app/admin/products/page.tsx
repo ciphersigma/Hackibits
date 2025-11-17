@@ -40,7 +40,7 @@ export default function AdminProducts() {
       fetchProducts();
       setShowForm(false);
       setEditingId(null);
-      setFormData({ name: '', description: '', price: '', category: '', image: '' });
+      setFormData({ name: '', description: '', price: '', category: '', image: '', stock: '' });
     }
   };
 
