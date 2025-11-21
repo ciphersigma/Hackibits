@@ -1,10 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const cron = require('node-cron');
+const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -32,19 +34,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'HackiBits API is running' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-});
-
-// Keep-alive ping to prevent server from sleeping (for free hosting)
-if (process.env.NODE_ENV === 'production') {
-  const https = require('https');
   
-  setInterval(() => {
-    https.get('https://hackibits.onrender.com/api/health', (res) => {
-      console.log(`Keep-alive ping: ${res.statusCode}`);
-    }).on('error', (err) => {
-      console.error('Keep-alive error:', err.message);
-    });
-  }, 5 * 60 * 1000); // Ping every 5 minutes
-}
+  // Keep-alive: Ping server every 10 minutes to prevent Azure from sleeping
+  cron.schedule('*/10 * * * *', async () => {
+    try {
+      const url = process.env.SERVER_URL || `http://localhost:${PORT}`;
+      await axios.get(`${url}/api/health`);
+      console.log('Keep-alive ping successful');
+    } catch (error) {
+      console.error('Keep-alive ping failed:', error.message);
+    }
+  });
+});

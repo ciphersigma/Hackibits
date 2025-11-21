@@ -1,4 +1,5 @@
 const sgMail = require('@sendgrid/mail');
+const { welcomeEmail, orderConfirmation, newsletterEmail } = require('./emailTemplates');
 
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -27,23 +28,6 @@ exports.sendBulkEmail = async (recipients, subject, htmlContent) => {
 };
 
 exports.sendWelcomeEmail = async (email, name) => {
-  const htmlContent = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #00D084;">Welcome to HackiBits Beta!</h1>
-      <p>Hi ${name},</p>
-      <p>Thank you for joining the HackiBits beta program! You're now part of an exclusive community.</p>
-      <h3>Your Beta Benefits:</h3>
-      <ul>
-        <li>30% discount on first purchase</li>
-        <li>Early access to all products</li>
-        <li>Priority customer support</li>
-        <li>Free shipping on first order</li>
-      </ul>
-      <p>We'll keep you updated on product launches and exclusive offers.</p>
-      <p style="margin-top: 30px;">Best regards,<br>HackiBits Team</p>
-    </div>
-  `;
-
   if (!process.env.SENDGRID_API_KEY) {
     console.log('Welcome email would be sent to:', email);
     return { accepted: [email] };
@@ -52,9 +36,29 @@ exports.sendWelcomeEmail = async (email, name) => {
   const msg = {
     to: email,
     from: process.env.EMAIL_USER || 'hackibits@gmail.com',
-    subject: 'Welcome to HackiBits Beta Program!',
-    html: htmlContent
+    subject: '🎉 Welcome to HackiBits Beta Program!',
+    html: welcomeEmail(name)
   };
 
   return await sgMail.send(msg);
+};
+
+exports.sendOrderConfirmation = async (email, name, orderId, items, total) => {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.log('Order confirmation would be sent to:', email);
+    return { accepted: [email] };
+  }
+
+  const msg = {
+    to: email,
+    from: process.env.EMAIL_USER || 'hackibits@gmail.com',
+    subject: `✓ Order Confirmed - #${orderId}`,
+    html: orderConfirmation(name, orderId, items, total)
+  };
+
+  return await sgMail.send(msg);
+};
+
+exports.sendNewsletter = async (recipients, subject, content) => {
+  return await this.sendBulkEmail(recipients, subject, newsletterEmail(content));
 };
